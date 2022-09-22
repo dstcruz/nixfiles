@@ -10,6 +10,7 @@
   # Build using: darwin-rebuild switch --flake .#Daniels-MacbookPro
   # Add --recreate-lock-file option to update all flake dependencies
   outputs = { self, nixpkgs, darwin }: {
+    # Not sure what this does ATM
     darwinPackages = self.darwinConfigurations."Daniel-MackbookPro".pkgs;
 
     darwinConfigurations."Daniels-MacbookPro" = darwin.lib.darwinSystem {
@@ -19,26 +20,27 @@
         ({ config, lib, pkgs, ... }: {
           # List packages installed in system profile. To search by name, run:
           # $ nix-env -qaP | grep wget
-          environment.systemPackages = [
-            pkgs.alacritty
-            pkgs.bat
-            pkgs.clac
-            pkgs.coreutils
-            pkgs.emacs
-            pkgs.fd
-            pkgs.fzf
-            pkgs.git
-            pkgs.gnugrep
-            pkgs.neovim
-            pkgs.pandoc
-            pkgs.ripgrep
-            pkgs.zsh
+          environment.systemPackages = with pkgs; [
+            alacritty
+            bat
+            clac
+            coreutils
+            emacs
+            fd
+            fzf
+            git
+            gnugrep
+            kitty
+            neovim
+            pandoc
+            ripgrep
+            zsh
           ];
 
           fonts.fontDir.enable = true;
-          fonts.fonts = [
-            pkgs.emacs-all-the-icons-fonts
-            pkgs.meslo-lgs-nf
+          fonts.fonts = with pkgs; [
+            emacs-all-the-icons-fonts
+            meslo-lgs-nf
           ];
 
           homebrew.enable = true;
