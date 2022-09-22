@@ -43,10 +43,11 @@
             ];
 
           homebrew.enable = true;
-          homebrew.onActivation.cleanup = "zap";
+          homebrew.onActivation.cleanup = "uninstall";
           homebrew.onActivation.upgrade = true;
           homebrew.global.autoUpdate = false;
           homebrew.global.brewfile = true;
+          homebrew.taps = [ "homebrew/cask" ];
           homebrew.casks = [ "google-chrome" "visual-studio-code" ];
           homebrew.masApps = {
             Amphetamine = 937984704;
