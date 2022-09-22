@@ -19,28 +19,27 @@
         ({ config, lib, pkgs, ... }: {
           # List packages installed in system profile. To search by name, run:
           # $ nix-env -qaP | grep wget
-          environment.systemPackages =
-            [
-              pkgs.alacritty
-              pkgs.bat
-              pkgs.clac
-              pkgs.coreutils
-              pkgs.emacs
-              pkgs.fd
-              pkgs.fzf
-              pkgs.git
-              pkgs.gnugrep
-              pkgs.neovim
-              pkgs.pandoc
-              pkgs.ripgrep
-              pkgs.zsh
-            ];
+          environment.systemPackages = [
+            pkgs.alacritty
+            pkgs.bat
+            pkgs.clac
+            pkgs.coreutils
+            pkgs.emacs
+            pkgs.fd
+            pkgs.fzf
+            pkgs.git
+            pkgs.gnugrep
+            pkgs.neovim
+            pkgs.pandoc
+            pkgs.ripgrep
+            pkgs.zsh
+          ];
 
           fonts.fontDir.enable = true;
-          fonts.fonts =
-            [ pkgs.emacs-all-the-icons-fonts
-              pkgs.meslo-lgs-nf
-            ];
+          fonts.fonts = [
+            pkgs.emacs-all-the-icons-fonts
+            pkgs.meslo-lgs-nf
+          ];
 
           homebrew.enable = true;
           homebrew.onActivation.cleanup = "uninstall";
@@ -48,12 +47,20 @@
           homebrew.global.autoUpdate = false;
           homebrew.global.brewfile = true;
           homebrew.taps = [ "homebrew/cask" ];
-          homebrew.casks = [ "google-chrome" "visual-studio-code" ];
+          homebrew.casks = [
+            "firefox"
+            "google-chrome"
+            "visual-studio-code"
+          ];
+          # See https://github.com/mas-cli/mas
+          # > mas list  # for installed apps
+          # > mas search --price # to search the app store
           homebrew.masApps = {
+            "Microsoft Remote Desktop" = 1295203466;
             Amphetamine = 937984704;
-            Telegram = 747648890;
-            #XCode = 497799835;
             Bitwarden = 1352778147;
+            Telegram = 747648890;
+            WhatsApp = 1147396723;
           };
 
           programs.zsh = {
@@ -66,6 +73,9 @@
           environment.shells = with pkgs; [ zsh ];
 
           services.emacs.enable = true;
+
+          # Use TouchID for sudo auth
+          security.pam.enableSudoTouchIdAuth = true;
 
           system.defaults.dock.autohide = true;
           system.defaults.dock.autohide-delay = 0.0;
