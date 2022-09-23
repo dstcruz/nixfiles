@@ -20,27 +20,26 @@
         ({ config, lib, pkgs, ... }: {
           # List packages installed in system profile. To search by name, run:
           # $ nix-env -qaP | grep wget
-          environment.systemPackages = with pkgs; [
-            alacritty
-            bat
-            clac
-            coreutils
-            emacs
-            fd
-            fzf
-            git
-            gnugrep
-            kitty
-            neovim
-            pandoc
-            ripgrep
-            zsh
+          environment.systemPackages = [
+            pkgs.bat
+            pkgs.clac
+            pkgs.coreutils
+            pkgs.emacs
+            pkgs.fd
+            pkgs.fzf
+            pkgs.git
+            pkgs.gnugrep
+            pkgs.kitty
+            pkgs.neovim
+            pkgs.pandoc
+            pkgs.ripgrep
+            pkgs.zsh
           ];
 
           fonts.fontDir.enable = true;
-          fonts.fonts = with pkgs; [
-            emacs-all-the-icons-fonts
-            meslo-lgs-nf
+          fonts.fonts = [
+            pkgs.emacs-all-the-icons-fonts
+            pkgs.meslo-lgs-nf
           ];
 
           homebrew.enable = true;
@@ -72,7 +71,7 @@
             enableSyntaxHighlighting = true;
           };
 
-          environment.shells = with pkgs; [ zsh ];
+          environment.shells = [ pkgs.zsh ];
 
           services.emacs.enable = true;
 
