@@ -49,6 +49,7 @@
           homebrew.global.brewfile = true;
           homebrew.taps = [ "homebrew/cask" ];
           homebrew.casks = [
+            "brave-browser"
             "firefox"
             "google-chrome"
             "visual-studio-code"
