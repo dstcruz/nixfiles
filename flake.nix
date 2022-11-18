@@ -115,7 +115,7 @@
           system.keyboard.remapCapsLockToControl = true;
 
           nix.useDaemon = true;
-          nix.package = pkgs.nixFlakes;
+          nix.package = pkgs.nix;
           nix.extraOptions = ''
             experimental-features = nix-command flakes
           '';
