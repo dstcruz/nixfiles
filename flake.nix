@@ -2,44 +2,34 @@
   description = "dansan's darwin system";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+
+    home-manager.url = "github:nix-community/home-manager/master";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
     darwin.url = "github:LnL7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   # Build using: darwin-rebuild switch --flake .#Daniels-MacbookPro
   # Add --recreate-lock-file option to update all flake dependencies
-  outputs = { self, nixpkgs, darwin }: {
-    # Not sure what this does ATM
-    darwinPackages = self.darwinConfigurations."Daniel-MackbookPro".pkgs;
-
-    darwinConfigurations."Daniels-MacbookPro" = darwin.lib.darwinSystem {
+  outputs = inputs: {
+    darwinConfigurations.Daniels-MacbookPro = inputs.darwin.lib.darwinSystem {
       system = "x86_64-darwin";
+      pkgs = import inputs.nixpkgs { system = "x86_64-darwin"; };
 
       modules = [
-        ({ config, lib, pkgs, ... }: {
+        ({ pkgs, ...}: {
           # List packages installed in system profile. To search by name, run:
           # $ nix-env -qaP | grep wget
           environment.systemPackages = [
-            pkgs.bat
-            pkgs.clac
-            pkgs.coreutils
-            pkgs.emacs
-            pkgs.fd
-            pkgs.fzf
-            pkgs.git
-            pkgs.gnugrep
-            pkgs.kitty
-            pkgs.neovim
-            pkgs.pandoc
-            pkgs.ripgrep
-            pkgs.zsh
+            # List of system wide packages to install
           ];
 
           fonts.fontDir.enable = true;
           fonts.fonts = [
+            (pkgs.nerdfonts.override { fonts = [ "Meslo" ]; })
             pkgs.emacs-all-the-icons-fonts
-            pkgs.meslo-lgs-nf
           ];
 
           homebrew.enable = true;
@@ -65,14 +55,13 @@
             WhatsApp = 1147396723;
           };
 
-          programs.zsh = {
-            enable = true;
-            promptInit = "source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
-            enableFzfHistory = true;
-            enableSyntaxHighlighting = true;
-          };
+          programs.zsh.enable = true;
+          programs.zsh.promptInit = "source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+          programs.zsh.enableFzfHistory = true;
+          programs.zsh.enableSyntaxHighlighting = true;
 
-          environment.shells = [ pkgs.zsh ];
+          environment.shells = [ pkgs.bash pkgs.zsh ];
+          environment.loginShell = pkgs.zsh;
 
           services.emacs.enable = true;
 
@@ -101,6 +90,7 @@
           system.defaults.trackpad.TrackpadThreeFingerDrag = true;
 
           system.defaults.finder.AppleShowAllExtensions = true;
+          system.defaults.finder._FXShowPosixPathInTitle = true;
           system.defaults.finder.AppleShowAllFiles = true;
           system.defaults.finder.ShowPathbar = true;
           system.defaults.finder.ShowStatusBar = true;
@@ -124,6 +114,54 @@
           # $ darwin-rebuild changelog
           system.stateVersion = 4;
         })
+        inputs.home-manager.darwinModules.home-manager {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            users.dansan.imports = [
+              ({pkgs, ...}: {
+                # Don't change this when you change package inputs. Leave it alone.
+                home.stateVersion = "23.05";
+
+                # specify my home-manager configs
+                home.packages = [
+                  # List of user-only packages to install
+                  # here are the ones that I don't care to tweak
+                  # otherwise they'd go under programs.<module>...
+                  pkgs.bat
+                  pkgs.clac
+                  pkgs.coreutils
+                  pkgs.emacs
+                  pkgs.fd
+                  pkgs.gnugrep
+                  pkgs.neovim
+                  pkgs.pandoc
+                  pkgs.ripgrep
+                ];
+
+                home.sessionVariables = {
+                  PAGER = "less";
+                  CLICOLOR = 1;
+                  EDITOR = "nvim";
+                };
+
+                programs.git.enable = true;
+                programs.git.package = pkgs.gitAndTools.gitFull;
+                programs.git.userEmail = "dstcruz@gmail.com";
+                programs.git.userName = "Daniel Santa Cruz";
+
+                programs.fzf.enable = true;
+                programs.fzf.enableZshIntegration = true;
+
+                programs.zsh.enable = true;
+                programs.zsh.enableCompletion = true;
+                programs.zsh.enableAutosuggestions = true;
+                programs.zsh.enableSyntaxHighlighting = true;
+                programs.zsh.shellAliases = { ls = "ls --color=auto -F"; };
+              })
+            ];
+          };
+        }
       ];
     };
   };
