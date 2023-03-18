@@ -14,7 +14,7 @@
   # Build using: darwin-rebuild switch --flake .#Daniels-MacbookPro
   # Add --recreate-lock-file option to update all flake dependencies
   outputs = inputs: {
-    darwinConfigurations.Daniels-MacbookPro = inputs.darwin.lib.darwinSystem {
+    darwinConfigurations.Daniels-MacBook-Pro = inputs.darwin.lib.darwinSystem {
       system = "x86_64-darwin";
       pkgs = import inputs.nixpkgs { system = "x86_64-darwin"; };
 
@@ -26,42 +26,41 @@
             # List of system wide packages to install
           ];
 
-          fonts.fontDir.enable = true;
-          fonts.fonts = [
-            (pkgs.nerdfonts.override { fonts = [ "Meslo" ]; })
-            pkgs.emacs-all-the-icons-fonts
-          ];
+	  fonts.fontDir.enable = true;
+	  fonts.fonts = [
+	  pkgs.nerdfonts
+	  ];
 
-          homebrew.enable = true;
-          homebrew.onActivation.cleanup = "uninstall";
-          homebrew.onActivation.upgrade = true;
-          homebrew.global.autoUpdate = false;
-          homebrew.global.brewfile = true;
-          homebrew.taps = [ "homebrew/cask" ];
-          homebrew.casks = [
+	  homebrew.enable = true;
+	  homebrew.onActivation.cleanup = "uninstall";
+	  homebrew.onActivation.upgrade = true;
+	  homebrew.global.autoUpdate = false;
+	  homebrew.global.brewfile = true;
+	  homebrew.taps = [ "homebrew/cask" ];
+	  homebrew.caskArgs.no_quarantine = true;
+	  homebrew.casks = [
+            "amethyst"
             "brave-browser"
             "firefox"
             "google-chrome"
+            "raycast"
             "visual-studio-code"
-          ];
+	  ];
           # See https://github.com/mas-cli/mas
           # > mas list  # for installed apps
           # > mas search --price # to search the app store
-          homebrew.masApps = {
-            "Microsoft Remote Desktop" = 1295203466;
-            Amphetamine = 937984704;
-            Bitwarden = 1352778147;
-            Telegram = 747648890;
-            WhatsApp = 1147396723;
-          };
+	  homebrew.masApps = {
+		  "Microsoft Remote Desktop" = 1295203466;
+		  Amphetamine = 937984704;
+		  Bitwarden = 1352778147;
+		  Telegram = 747648890;
+		  WhatsApp = 1147396723;
+	  };
+
+	  environment.shells = [ pkgs.bash pkgs.zsh ];
+          environment.loginShell = pkgs.zsh;
 
           programs.zsh.enable = true;
-          programs.zsh.promptInit = "source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
-          programs.zsh.enableFzfHistory = true;
-          programs.zsh.enableSyntaxHighlighting = true;
-
-          environment.shells = [ pkgs.bash pkgs.zsh ];
-          environment.loginShell = pkgs.zsh;
 
           services.emacs.enable = true;
 
@@ -114,6 +113,7 @@
           # $ darwin-rebuild changelog
           system.stateVersion = 4;
         })
+
         inputs.home-manager.darwinModules.home-manager {
           home-manager = {
             useGlobalPkgs = true;
