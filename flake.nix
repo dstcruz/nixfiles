@@ -12,7 +12,6 @@
   };
 
   # Build using: darwin-rebuild switch --flake .#Daniels-MacbookPro
-  # Add --recreate-lock-file option to update all flake dependencies
   outputs = inputs: {
     formatter."x86_64-darwin" = inputs.nixpkgs.legacyPackages."x86_64-darwin".nixpkgs-fmt;
 
@@ -30,7 +29,7 @@
 
           fonts.fontDir.enable = true;
           fonts.fonts = [
-            pkgs.nerdfonts
+            pkgs.meslo-lgs-nf
           ];
 
           homebrew.enable = true;
@@ -48,6 +47,7 @@
             "raycast"
             "visual-studio-code"
           ];
+
           # See https://github.com/mas-cli/mas
           # > mas list  # for installed apps
           # > mas search --price # to search the app store
@@ -65,9 +65,6 @@
           programs.zsh.enable = true;
 
           services.emacs.enable = true;
-
-          # Use TouchID for sudo auth
-          security.pam.enableSudoTouchIdAuth = true;
 
           system.defaults.dock.autohide = true;
           system.defaults.dock.autohide-delay = 0.0;
@@ -140,12 +137,25 @@
                   pkgs.neovim
                   pkgs.pandoc
                   pkgs.ripgrep
+                  pkgs.zsh-powerlevel10k
+                  pkgs.neofetch
+                  pkgs.exa
                 ];
 
                 home.sessionVariables = {
-                  PAGER = "less";
+                  PAGER = "bat";
                   CLICOLOR = 1;
                   EDITOR = "nvim";
+                  TERMINAL = "alacritty";
+                };
+
+                programs.alacritty = {
+                  enable = true;
+                  settings.font.normal.family = "MesloLGS Nerd Font Mono";
+                  settings.font.size = 14;
+                  settings.dynamic_title = true;
+                  settings.window.padding.x = 10;
+                  settings.window.padding.y = 10;
                 };
 
                 programs.git.enable = true;
@@ -160,7 +170,39 @@
                 programs.zsh.enableCompletion = true;
                 programs.zsh.enableAutosuggestions = true;
                 programs.zsh.enableSyntaxHighlighting = true;
-                programs.zsh.shellAliases = { ls = "ls --color=auto -F"; };
+                programs.zsh.shellAliases = {
+                  ls = "exa --group-directories-first";
+                };
+                programs.zsh.history = {
+                  expireDuplicatesFirst = true;
+                  ignoreSpace = true;
+                  save = 10000;
+                  share = true;
+                };
+                programs.zsh.plugins = [
+                  {
+                    name = "powerlevel10k";
+                    src = "${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k";
+                    file = "powerlevel10k.zsh-theme";
+                  }
+                  {
+                    name = "powerlevel10k-config";
+                    src = ./dotfiles;
+                    file = "p10k.zsh";
+                  }
+                ];
+                programs.zsh.initExtraFirst = ''
+                  # powerlevel10k instant prompt stuff
+                  if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
+                    source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
+                  fi
+               '';
+
+               # ~/.config symlinks
+               xdg.configFile = {};
+
+               # ~ symlinks
+               home.file = {};
               })
             ];
           };
