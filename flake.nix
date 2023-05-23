@@ -119,7 +119,7 @@
             useGlobalPkgs = true;
             useUserPackages = true;
             users.dansan.imports = [
-              ({ pkgs, ... }: {
+              ({ pkgs, config, ... }: {
                 # Don't change this when you change package inputs. Leave it alone.
                 home.stateVersion = "23.05";
 
@@ -140,6 +140,19 @@
                   pkgs.zsh-powerlevel10k
                   pkgs.neofetch
                   pkgs.exa
+                  pkgs.binutils
+                  (pkgs.ripgrep.override { withPCRE2 = true; })
+                  pkgs.gnutls
+                  pkgs.imagemagick
+                  pkgs.zstd
+                  pkgs.nodePackages.javascript-typescript-langserver
+                  pkgs.sqlite
+                  pkgs.editorconfig-core-c
+                  pkgs.emacs-all-the-icons-fonts
+                ];
+
+                home.sessionPath = [
+                  "\${xdg.configHome}/emacs/bin"
                 ];
 
                 home.sessionVariables = {
@@ -196,13 +209,13 @@
                   if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
                     source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
                   fi
-               '';
+                '';
 
-               # ~/.config symlinks
-               xdg.configFile = {};
+                # ~/.config symlinks
+                xdg.configFile = { };
 
-               # ~ symlinks
-               home.file = {};
+                # ~ symlinks
+                home.file = { };
               })
             ];
           };
