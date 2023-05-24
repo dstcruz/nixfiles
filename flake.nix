@@ -66,6 +66,11 @@
 
           services.emacs.enable = true;
 
+          users.users.dansan = {
+            name = "dansan";
+            home = "/Users/dansan";
+          };
+
           system.defaults.dock.autohide = true;
           system.defaults.dock.autohide-delay = 0.0;
           system.defaults.dock.autohide-time-modifier = 0.0;
@@ -118,6 +123,7 @@
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
+
             users.dansan.imports = [
               ({ pkgs, config, ... }: {
                 # Don't change this when you change package inputs. Leave it alone.
@@ -152,7 +158,7 @@
                 ];
 
                 home.sessionPath = [
-                  "\${xdg.configHome}/emacs/bin"
+                  "$HOME/.config/emacs/bin"
                 ];
 
                 home.sessionVariables = {
@@ -212,7 +218,14 @@
                 '';
 
                 # ~/.config symlinks
-                xdg.configFile = { };
+                xdg.configFile = {
+                  "doom" = {
+                    source = ./doom;
+                    recursive = true;
+                    # This is now working
+                    # onChange = "$HOME/.config/emacs/bin/doom sync";
+                  };
+                };
 
                 # ~ symlinks
                 home.file = { };
