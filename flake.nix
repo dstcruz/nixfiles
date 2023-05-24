@@ -134,27 +134,30 @@
                   # List of user-only packages to install
                   # here are the ones that I don't care to tweak
                   # otherwise they'd go under programs.<module>...
+                  (pkgs.ripgrep.override { withPCRE2 = true; })
                   pkgs.bat
+                  pkgs.binutils
                   pkgs.clac
                   pkgs.coreutils
+                  pkgs.coreutils-prefixed
+                  pkgs.editorconfig-core-c
                   pkgs.emacs
+                  pkgs.emacs-all-the-icons-fonts
+                  pkgs.exa
                   pkgs.fd
                   pkgs.gnugrep
-                  pkgs.neovim
-                  pkgs.pandoc
-                  pkgs.ripgrep
-                  pkgs.zsh-powerlevel10k
-                  pkgs.neofetch
-                  pkgs.exa
-                  pkgs.binutils
-                  (pkgs.ripgrep.override { withPCRE2 = true; })
                   pkgs.gnutls
                   pkgs.imagemagick
-                  pkgs.zstd
+                  pkgs.neofetch
+                  pkgs.neovim
+                  pkgs.nixfmt
                   pkgs.nodePackages.javascript-typescript-langserver
+                  pkgs.pandoc
+                  pkgs.ripgrep
+                  pkgs.shellcheck
                   pkgs.sqlite
-                  pkgs.editorconfig-core-c
-                  pkgs.emacs-all-the-icons-fonts
+                  pkgs.zsh-powerlevel10k
+                  pkgs.zstd
                 ];
 
                 home.sessionPath = [
