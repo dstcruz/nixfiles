@@ -151,7 +151,7 @@
                   pkgs.neofetch
                   pkgs.neovim
                   pkgs.nixfmt
-                  pkgs.nodePackages.javascript-typescript-langserver
+                  pkgs.nodePackages.typescript-language-server
                   pkgs.pandoc
                   pkgs.ripgrep
                   pkgs.shellcheck
