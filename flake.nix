@@ -135,6 +135,7 @@
                   # here are the ones that I don't care to tweak
                   # otherwise they'd go under programs.<module>...
                   (pkgs.ripgrep.override { withPCRE2 = true; })
+                  pkgs.ispell
                   pkgs.bat
                   pkgs.binutils
                   pkgs.clac
