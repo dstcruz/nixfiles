@@ -152,6 +152,7 @@
                   pkgs.neofetch
                   pkgs.neovim
                   pkgs.nixfmt
+                  pkgs.nodePackages.svelte-language-server
                   pkgs.nodePackages.typescript-language-server
                   pkgs.pandoc
                   pkgs.ripgrep
