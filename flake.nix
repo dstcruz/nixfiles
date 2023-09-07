@@ -30,6 +30,7 @@
           fonts.fontDir.enable = true;
           fonts.fonts = [
             pkgs.meslo-lgs-nf
+            pkgs.commit-mono
           ];
 
           homebrew.enable = true;
@@ -59,16 +60,19 @@
             WhatsApp = 1147396723;
           };
 
-          environment.shells = [ pkgs.bash pkgs.zsh ];
-          environment.loginShell = pkgs.zsh;
+          environment.shells = [ pkgs.bash pkgs.zsh pkgs.fish ];
+          environment.loginShell = "${pkgs.fish}/bin/fish -l";
 
-          programs.zsh.enable = true;
+          programs.fish.enable = true;
+          #programs.zsh.enable = true;
 
-          services.emacs.enable = true;
+          #services.emacs.enable = true;
+          services.nix-daemon.enable = true;
 
           users.users.dansan = {
             name = "dansan";
             home = "/Users/dansan";
+            shell = pkgs.fish;
           };
 
           system.defaults.dock.autohide = true;
@@ -135,6 +139,7 @@
                   # here are the ones that I don't care to tweak
                   # otherwise they'd go under programs.<module>...
                   (pkgs.ripgrep.override { withPCRE2 = true; })
+                  pkgs.atuin
                   pkgs.ispell
                   pkgs.bat
                   pkgs.binutils
@@ -142,9 +147,10 @@
                   pkgs.coreutils
                   pkgs.coreutils-prefixed
                   pkgs.editorconfig-core-c
-                  pkgs.emacs
+                  pkgs.emacs29
                   pkgs.emacs-all-the-icons-fonts
                   pkgs.exa
+                  pkgs.fish
                   pkgs.fd
                   pkgs.gnugrep
                   pkgs.gnutls
@@ -182,45 +188,58 @@
                   settings.window.padding.y = 10;
                 };
 
-                programs.git.enable = true;
-                programs.git.package = pkgs.gitAndTools.gitFull;
-                programs.git.userEmail = "dstcruz@gmail.com";
-                programs.git.userName = "Daniel Santa Cruz";
+                programs.atuin = {
+                  enable = true;
+                  enableFishIntegration = true;
+                  enableZshIntegration = true;
+                };
+
+                programs.git = {
+                  enable = true;
+                  package = pkgs.gitAndTools.gitFull;
+                  userEmail = "dstcruz@gmail.com";
+                  userName = "Daniel Santa Cruz";
+                };
+
+                programs.fish.enable = true;
+
 
                 programs.fzf.enable = true;
-                programs.fzf.enableZshIntegration = true;
+                #programs.fzf.enableZshIntegration = true;
 
-                programs.zsh.enable = true;
-                programs.zsh.enableCompletion = true;
-                programs.zsh.enableAutosuggestions = true;
-                programs.zsh.enableSyntaxHighlighting = true;
-                programs.zsh.shellAliases = {
-                  ls = "exa --group-directories-first";
+                programs.zsh = {
+                  enable = false;
+                  enableCompletion = true;
+                  enableAutosuggestions = true;
+                  syntaxHighlighting.enable = true;
+                  shellAliases = {
+                    ls = "exa --group-directories-first";
+                  };
+                  history = {
+                    expireDuplicatesFirst = true;
+                    ignoreSpace = true;
+                    save = 10000;
+                    share = true;
+                  };
+                  plugins = [
+                    {
+                      name = "powerlevel10k";
+                      src = "${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k";
+                      file = "powerlevel10k.zsh-theme";
+                    }
+                    {
+                      name = "powerlevel10k-config";
+                      src = ./dotfiles;
+                      file = "p10k.zsh";
+                    }
+                  ];
+                  initExtraFirst = ''
+                    # powerlevel10k instant prompt stuff
+                    if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
+                      source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
+                    fi
+                  '';
                 };
-                programs.zsh.history = {
-                  expireDuplicatesFirst = true;
-                  ignoreSpace = true;
-                  save = 10000;
-                  share = true;
-                };
-                programs.zsh.plugins = [
-                  {
-                    name = "powerlevel10k";
-                    src = "${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k";
-                    file = "powerlevel10k.zsh-theme";
-                  }
-                  {
-                    name = "powerlevel10k-config";
-                    src = ./dotfiles;
-                    file = "p10k.zsh";
-                  }
-                ];
-                programs.zsh.initExtraFirst = ''
-                  # powerlevel10k instant prompt stuff
-                  if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
-                    source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
-                  fi
-                '';
 
                 # ~/.config symlinks
                 xdg.configFile = {
