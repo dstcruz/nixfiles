@@ -149,7 +149,7 @@
                   pkgs.editorconfig-core-c
                   pkgs.emacs29
                   pkgs.emacs-all-the-icons-fonts
-                  pkgs.exa
+                  pkgs.eza
                   pkgs.fish
                   pkgs.fd
                   pkgs.gnugrep
@@ -213,7 +213,7 @@
                   enableAutosuggestions = true;
                   syntaxHighlighting.enable = true;
                   shellAliases = {
-                    ls = "exa --group-directories-first";
+                    ls = "eza";
                   };
                   history = {
                     expireDuplicatesFirst = true;
