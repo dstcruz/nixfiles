@@ -15,7 +15,7 @@
   outputs = inputs: {
     formatter."x86_64-darwin" = inputs.nixpkgs.legacyPackages."x86_64-darwin".nixpkgs-fmt;
 
-    darwinConfigurations.Daniels-MacBook-Pro = inputs.darwin.lib.darwinSystem {
+    darwinConfigurations.daniel-macbook-pro-2018 = inputs.darwin.lib.darwinSystem {
       system = "x86_64-darwin";
       pkgs = import inputs.nixpkgs { system = "x86_64-darwin"; };
 
@@ -41,8 +41,6 @@
           homebrew.taps = [ "homebrew/cask" ];
           homebrew.caskArgs.no_quarantine = true;
           homebrew.casks = [
-            "amethyst"
-            "brave-browser"
             "firefox"
             "google-chrome"
             "raycast"
@@ -58,6 +56,10 @@
             Bitwarden = 1352778147;
             Telegram = 747648890;
             WhatsApp = 1147396723;
+            WireGuard = 1451685025;
+            Pages = 409201541;
+            Numbers = 409203825;
+            "AdGuard for Safari" = 1440147259;
           };
 
           environment.shells = [ pkgs.bash pkgs.zsh pkgs.fish ];
@@ -74,6 +76,8 @@
             home = "/Users/dansan";
             shell = pkgs.fish;
           };
+
+          networking.hostName = "daniel-macbook-pro-2018";
 
           system.defaults.dock.autohide = true;
           system.defaults.dock.autohide-delay = 0.0;
@@ -152,6 +156,7 @@
                   pkgs.eza
                   pkgs.fish
                   pkgs.fd
+                  pkgs.git
                   pkgs.gnugrep
                   pkgs.gnutls
                   pkgs.imagemagick
@@ -196,7 +201,8 @@
 
                 programs.git = {
                   enable = true;
-                  package = pkgs.gitAndTools.gitFull;
+                  package = pkgs.git;
+                  #package = pkgs.gitAndTools.gitFull;
                   userEmail = "dstcruz@gmail.com";
                   userName = "Daniel Santa Cruz";
                 };
@@ -208,7 +214,7 @@
                 #programs.fzf.enableZshIntegration = true;
 
                 programs.zsh = {
-                  enable = false;
+                  enable = true;
                   enableCompletion = true;
                   enableAutosuggestions = true;
                   syntaxHighlighting.enable = true;
