@@ -186,11 +186,12 @@
 
                 programs.alacritty = {
                   enable = true;
-                  settings.font.normal.family = "MesloLGS Nerd Font Mono";
+                  settings.font.normal.family = "CommitMono";
                   settings.font.size = 14;
                   settings.dynamic_title = true;
                   settings.window.padding.x = 10;
                   settings.window.padding.y = 10;
+                  settings.shell.program = "${pkgs.fish}/bin/fish";
                 };
 
                 programs.atuin = {
