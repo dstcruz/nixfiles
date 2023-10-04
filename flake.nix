@@ -45,6 +45,7 @@
             "google-chrome"
             "raycast"
             "visual-studio-code"
+            "telegram"
           ];
 
           # See https://github.com/mas-cli/mas
@@ -54,7 +55,7 @@
             "Microsoft Remote Desktop" = 1295203466;
             Amphetamine = 937984704;
             Bitwarden = 1352778147;
-            Telegram = 747648890;
+            #Telegram = 747648890;
             WhatsApp = 1147396723;
             WireGuard = 1451685025;
             Pages = 409201541;
