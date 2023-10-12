@@ -46,6 +46,7 @@
             "raycast"
             "visual-studio-code"
             "telegram"
+            "brave-browser"
           ];
 
           # See https://github.com/mas-cli/mas
