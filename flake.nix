@@ -31,7 +31,13 @@
             ];
 
             fonts.fontDir.enable = true;
-            fonts.fonts = [ pkgs.meslo-lgs-nf pkgs.commit-mono ];
+            fonts.fonts = [
+              pkgs.emacs-all-the-icons-fonts
+              (pkgs.nerdfonts.override { fonts = [ "Hack" ]; })
+              pkgs.meslo-lgs-nf
+              pkgs.commit-mono
+              pkgs.nerdfonts
+            ];
 
             homebrew.enable = true;
             homebrew.onActivation.cleanup = "uninstall";
@@ -41,6 +47,7 @@
             homebrew.taps = [ "homebrew/cask" ];
             homebrew.caskArgs.no_quarantine = true;
             homebrew.casks = [
+              "arc"
               "firefox"
               "google-chrome"
               "raycast"
@@ -181,6 +188,7 @@
                     pkgs.sqlite
                     pkgs.zsh-powerlevel10k
                     pkgs.zstd
+                    pkgs.fontconfig
                   ];
 
                   home.sessionPath = [ "$HOME/.config/emacs/bin" ];
@@ -255,8 +263,12 @@
 
                   # ~/.config symlinks
                   xdg.configFile = {
+                    "fish/functions" = {
+                      source = ./config/fish/functions;
+                      recursive = true;
+                    };
                     "doom" = {
-                      source = ./doom;
+                      source = ./config/doom;
                       recursive = true;
                       # This is now working
                       # onChange = "$HOME/.config/emacs/bin/doom sync";

@@ -42,6 +42,9 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 
+;; because I use fish... doom doctor suggests telling emacs to ignore $SHELL and use bash
+(setq shell-file-name (executable-find "bash"))
+
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
