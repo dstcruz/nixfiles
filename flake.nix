@@ -7,6 +7,7 @@
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
+    #darwin.url = "github:wegank/nix-darwin/mddoc-remove";
     darwin.url = "github:LnL7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
   };
@@ -27,16 +28,12 @@
             # $ nix-env -qaP | grep wget
             environment.systemPackages = [
               # List of system wide packages to install
-	      pkgs.emacs29
             ];
 
             fonts.fontDir.enable = true;
             fonts.fonts = [
-              pkgs.emacs-all-the-icons-fonts
-              (pkgs.nerdfonts.override { fonts = [ "Hack" ]; })
               pkgs.meslo-lgs-nf
               pkgs.commit-mono
-              pkgs.nerdfonts
             ];
 
             homebrew.enable = true;
@@ -77,9 +74,6 @@
 
             programs.fish.enable = true;
             #programs.zsh.enable = true;
-
-            #services.emacs.enable = true;
-            services.nix-daemon.enable = true;
 
             users.users.dansan = {
               name = "dansan";
@@ -166,9 +160,6 @@
                     #pkgs.coreutils
                     pkgs.coreutils-prefixed
                     pkgs.editorconfig-core-c
-		    # apparently there are issues with the home-manager way of installing this
-                    #pkgs.emacs29
-                    pkgs.emacs-all-the-icons-fonts
                     pkgs.eza
                     pkgs.fish
                     pkgs.fd
@@ -179,9 +170,9 @@
                     pkgs.imagemagick
                     pkgs.neofetch
                     pkgs.neovim
-                    pkgs.nixfmt
-                    pkgs.nodePackages.svelte-language-server
-                    pkgs.nodePackages.typescript-language-server
+                    pkgs.nixfmt-classic
+                    #pkgs.nodePackages.svelte-language-server
+                    #pkgs.nodePackages.typescript-language-server
                     pkgs.pandoc
                     pkgs.ripgrep
                     pkgs.shellcheck
@@ -189,24 +180,28 @@
                     pkgs.zsh-powerlevel10k
                     pkgs.zstd
                     pkgs.fontconfig
+                    pkgs.difftastic
+		    pkgs.tree-sitter
                   ];
-
-                  home.sessionPath = [ "$HOME/.config/emacs/bin" ];
 
                   home.sessionVariables = {
                     PAGER = "bat";
                     CLICOLOR = 1;
                     EDITOR = "nvim";
                     TERMINAL = "alacritty";
+                    TERM = "xterm-256color";
                   };
 
                   programs.alacritty = {
                     enable = true;
-                    settings.font.normal.family = "CommitMono";
+                    settings.font.normal.family = "MesloLGS Nerd Font Mono";
                     settings.font.size = 14;
+                    settings.shell.program = "${pkgs.fish}/bin/fish";
+                    settings.window.blur = true;
+                    settings.window.decorations = "Buttonless";
+                    settings.window.opacity = 0.8;
                     settings.window.padding.x = 10;
                     settings.window.padding.y = 10;
-                    settings.shell.program = "${pkgs.fish}/bin/fish";
                   };
 
                   programs.atuin = {
@@ -221,6 +216,11 @@
                     #package = pkgs.gitAndTools.gitFull;
                     userEmail = "dstcruz@gmail.com";
                     userName = "Daniel Santa Cruz";
+                    difftastic.enable = true;
+                    aliases = {
+                      dtl = "difftool";
+                      dlog = "-c diff.external=difft log -p --ext-diff";
+                    };
                   };
 
                   programs.fish.enable = true;
@@ -228,10 +228,15 @@
                   programs.fzf.enable = true;
                   #programs.fzf.enableZshIntegration = true;
 
+                  programs.direnv = {
+                    enable = true;
+                    nix-direnv.enable = true;
+                  };
+
                   programs.zsh = {
                     enable = true;
                     enableCompletion = true;
-                    enableAutosuggestions = true;
+                    autosuggestion.enable = true;
                     syntaxHighlighting.enable = true;
                     shellAliases = { ls = "eza"; };
                     history = {
@@ -266,12 +271,6 @@
                     "fish/functions" = {
                       source = ./config/fish/functions;
                       recursive = true;
-                    };
-                    "doom" = {
-                      source = ./config/doom;
-                      recursive = true;
-                      # This is now working
-                      # onChange = "$HOME/.config/emacs/bin/doom sync";
                     };
                   };
 
