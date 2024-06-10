@@ -12,7 +12,10 @@
     darwin.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  # Build using: darwin-rebuild switch --flake .#Daniels-MacbookPro
+  # Build using: 
+  # > darwin-rebuild switch --flake .#daniel-macbook-pro-2018
+  # Alternatively, since this system _is_ daniel-macbook-pro-2018, then we can build with:
+  # > darwin-rebuild switch --flake .
   outputs = inputs: {
     formatter."x86_64-darwin" =
       inputs.nixpkgs.legacyPackages."x86_64-darwin".nixpkgs-fmt;
@@ -69,16 +72,13 @@
               "AdGuard for Safari" = 1440147259;
             };
 
-            environment.shells = [ pkgs.bash pkgs.zsh pkgs.fish ];
-            environment.loginShell = "${pkgs.fish}/bin/fish -l";
-
+            environment.shells = [ pkgs.fish ];
+            #environment.loginShell = "${pkgs.fish}/bin/fish -l";
             programs.fish.enable = true;
-            #programs.zsh.enable = true;
 
             users.users.dansan = {
               name = "dansan";
               home = "/Users/dansan";
-              shell = pkgs.fish;
             };
 
             networking.hostName = "daniel-macbook-pro-2018";
@@ -153,39 +153,34 @@
                     # otherwise they'd go under programs.<module>...
                     (pkgs.ripgrep.override { withPCRE2 = true; })
                     pkgs.atuin
-                    pkgs.ispell
-                    pkgs.bat
                     pkgs.binutils
                     pkgs.clac
-                    #pkgs.coreutils
                     pkgs.coreutils-prefixed
+                    pkgs.difftastic
                     pkgs.editorconfig-core-c
-                    pkgs.eza
-                    pkgs.fish
                     pkgs.fd
+                    pkgs.findutils
+                    pkgs.fishPlugins.tide
+                    pkgs.fontconfig
                     pkgs.gawk
                     pkgs.git
                     pkgs.gnugrep
                     pkgs.gnutls
+                    pkgs.home-manager
                     pkgs.imagemagick
+                    pkgs.ispell
                     pkgs.neofetch
                     pkgs.neovim
                     pkgs.nixfmt-classic
-                    #pkgs.nodePackages.svelte-language-server
-                    #pkgs.nodePackages.typescript-language-server
                     pkgs.pandoc
                     pkgs.ripgrep
                     pkgs.shellcheck
                     pkgs.sqlite
-                    pkgs.zsh-powerlevel10k
+                    pkgs.tree-sitter
                     pkgs.zstd
-                    pkgs.fontconfig
-                    pkgs.difftastic
-		    pkgs.tree-sitter
                   ];
 
                   home.sessionVariables = {
-                    PAGER = "bat";
                     CLICOLOR = 1;
                     EDITOR = "nvim";
                     TERMINAL = "alacritty";
@@ -199,7 +194,7 @@
                     settings.shell.program = "${pkgs.fish}/bin/fish";
                     settings.window.blur = true;
                     settings.window.decorations = "Buttonless";
-                    settings.window.opacity = 0.8;
+                    settings.window.opacity = 0.6;
                     settings.window.padding.x = 10;
                     settings.window.padding.y = 10;
                   };
@@ -208,6 +203,19 @@
                     enable = true;
                     enableFishIntegration = true;
                     enableZshIntegration = true;
+                  };
+                  
+                  programs.bat = {
+                    enable = true;
+                    config = {
+                      pager = "less -FR";
+                      theme = "Nord";
+                    };
+                  };
+
+                  programs.eza = {
+                    enable = true;
+                    enableFishIntegration = true;
                   };
 
                   programs.git = {
@@ -223,56 +231,50 @@
                     };
                   };
 
-                  programs.fish.enable = true;
+                  programs.fish = {
+                    enable = true;
+
+                    functions = {
+                      # $1 length is 2 -> `cd ../`, 3 -> `cd ../../`, etc
+                      __multicd = "echo cd (string repeat --count (math (string length -- $argv[1]) - 1) ../)";
+                    };
+
+                    plugins = [
+                      { name = "fishPlugins.tide"; src = pkgs.fishPlugins.tide.src; }
+                    ];
+
+                    shellAbbrs = 
+                      let
+                        global = {
+                          position = "anywhere";
+                        };
+                        cursor = {
+                          setCursor = true;
+                        };
+                        regex = pat: { regex = pat; };
+                        function = name: { function = name; };
+                        text = str: { expansion = str; };
+                      in {
+                        _dotdot =
+                          regex "^\\.\\.+$" // function "__multicd";
+                        calc = "clac";
+                      };
+
+                    interactiveShellInit = ''
+                      # disable greeting
+                      set -U fish_greeting
+                    '';
+                  };
 
                   programs.fzf.enable = true;
-                  #programs.fzf.enableZshIntegration = true;
 
                   programs.direnv = {
                     enable = true;
                     nix-direnv.enable = true;
                   };
 
-                  programs.zsh = {
-                    enable = true;
-                    enableCompletion = true;
-                    autosuggestion.enable = true;
-                    syntaxHighlighting.enable = true;
-                    shellAliases = { ls = "eza"; };
-                    history = {
-                      expireDuplicatesFirst = true;
-                      ignoreSpace = true;
-                      save = 10000;
-                      share = true;
-                    };
-                    plugins = [
-                      {
-                        name = "powerlevel10k";
-                        src =
-                          "${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k";
-                        file = "powerlevel10k.zsh-theme";
-                      }
-                      {
-                        name = "powerlevel10k-config";
-                        src = ./dotfiles;
-                        file = "p10k.zsh";
-                      }
-                    ];
-                    initExtraFirst = ''
-                      # powerlevel10k instant prompt stuff
-                      if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
-                        source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
-                      fi
-                    '';
-                  };
-
                   # ~/.config symlinks
-                  xdg.configFile = {
-                    "fish/functions" = {
-                      source = ./config/fish/functions;
-                      recursive = true;
-                    };
-                  };
+                  xdg.configFile = { };
 
                   # ~ symlinks
                   home.file = { };

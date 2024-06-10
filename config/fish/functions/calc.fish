@@ -1,3 +1,0 @@
-function calc
-         clac
-end
