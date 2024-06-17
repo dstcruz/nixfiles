@@ -33,8 +33,7 @@
               # List of system wide packages to install
             ];
 
-            fonts.fontDir.enable = true;
-            fonts.fonts = [
+            fonts.packages = [
               pkgs.meslo-lgs-nf
               pkgs.commit-mono
             ];
