@@ -171,6 +171,7 @@
                     pkgs.neofetch
                     pkgs.neovim
                     pkgs.nixfmt-classic
+                    pkgs.nushell
                     pkgs.pandoc
                     pkgs.ripgrep
                     pkgs.shellcheck
@@ -193,7 +194,7 @@
                     settings.shell.program = "${pkgs.fish}/bin/fish";
                     settings.window.blur = true;
                     settings.window.decorations = "Buttonless";
-                    settings.window.opacity = 0.6;
+                    settings.window.opacity = 0.75;
                     settings.window.padding.x = 10;
                     settings.window.padding.y = 10;
                   };
