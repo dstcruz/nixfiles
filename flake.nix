@@ -47,13 +47,13 @@
             homebrew.caskArgs.no_quarantine = true;
             homebrew.casks = [
               "arc"
-              "firefox"
-              "google-chrome"
-              "raycast"
-              "visual-studio-code"
-              "telegram"
               "brave-browser"
+              "firefox"
               "microsoft-edge"
+              "obsidian"
+              "raycast"
+              "telegram"
+              "visual-studio-code"
             ];
 
             # See https://github.com/mas-cli/mas
@@ -72,7 +72,6 @@
             };
 
             environment.shells = [ pkgs.fish ];
-            #environment.loginShell = "${pkgs.fish}/bin/fish -l";
             programs.fish.enable = true;
 
             users.users.dansan = {
