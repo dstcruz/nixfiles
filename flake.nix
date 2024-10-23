@@ -1,15 +1,23 @@
 {
-  description = "dansan's darwin system";
+  description = "dansan's nix-darwin system";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
-    home-manager.url = "github:nix-community/home-manager/master";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    lix-module = {
+      url = "https://git.lix.systems/lix-project/nixos-module/archive/main.tar.gz";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-    #darwin.url = "github:wegank/nix-darwin/mddoc-remove";
-    darwin.url = "github:LnL7/nix-darwin";
-    darwin.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager = {
+      url = "github:nix-community/home-manager/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   # Build using: 
@@ -17,15 +25,15 @@
   # Alternatively, since this system _is_ daniel-macbook-pro-2018, then we can build with:
   # > darwin-rebuild switch --flake .
   outputs = inputs: {
-    formatter."x86_64-darwin" =
-      inputs.nixpkgs.legacyPackages."x86_64-darwin".nixpkgs-fmt;
-
     darwinConfigurations.daniel-macbook-pro-2018 =
-      inputs.darwin.lib.darwinSystem {
+      inputs.nix-darwin.lib.darwinSystem {
         system = "x86_64-darwin";
         pkgs = import inputs.nixpkgs { system = "x86_64-darwin"; };
 
         modules = [
+          # see: https://lix.systems/add-to-config/
+          inputs.lix-module.nixosModules.default
+
           ({ pkgs, ... }: {
             # List packages installed in system profile. To search by name, run:
             # $ nix-env -qaP | grep wget
@@ -47,13 +55,13 @@
             homebrew.caskArgs.no_quarantine = true;
             homebrew.casks = [
               "arc"
-              "brave-browser"
               "firefox"
               "microsoft-edge"
               "obsidian"
               "raycast"
               "telegram"
               "visual-studio-code"
+              "wezterm"
             ];
 
             # See https://github.com/mas-cli/mas
@@ -63,7 +71,6 @@
               "Microsoft Remote Desktop" = 1295203466;
               Amphetamine = 937984704;
               Bitwarden = 1352778147;
-              #Telegram = 747648890;
               WhatsApp = 1147396723;
               WireGuard = 1451685025;
               Pages = 409201541;
@@ -81,43 +88,46 @@
 
             networking.hostName = "daniel-macbook-pro-2018";
 
-            system.defaults.dock.autohide = true;
-            system.defaults.dock.autohide-delay = 0.0;
-            system.defaults.dock.autohide-time-modifier = 0.0;
-            system.defaults.dock.mineffect = "scale";
-            system.defaults.dock.mru-spaces = false;
-            system.defaults.dock.orientation = "left";
-            system.defaults.dock.show-recents = false;
-            system.defaults.dock.showhidden = true;
-            system.defaults.dock.tilesize = 40;
+            system.defaults.dock = {
+              autohide = true;
+              autohide-delay = 0.0;
+              autohide-time-modifier = 0.0;
+              mineffect = "scale";
+              mru-spaces = false;
+              orientation = "left";
+              show-recents = false;
+              showhidden = true;
+              tilesize = 40;
 
-            system.defaults.dock.wvous-tl-corner = 1; # disabled
-            system.defaults.dock.wvous-tr-corner = 1; # disabled
-            system.defaults.dock.wvous-bl-corner = 1; # disabled
-            system.defaults.dock.wvous-br-corner = 1; # disabled
+              wvous-tl-corner = 1; # disabled
+              wvous-tr-corner = 1; # disabled
+              wvous-bl-corner = 1; # disabled
+              wvous-br-corner = 1; # disabled
+            };
 
             system.defaults.screencapture.type = "jpg";
 
-            system.defaults.trackpad.Clicking = true;
-            system.defaults.trackpad.TrackpadRightClick = true;
-            system.defaults.trackpad.TrackpadThreeFingerDrag = true;
+            system.defaults.trackpad = {
+              Clicking = true;
+              TrackpadRightClick = true;
+              TrackpadThreeFingerDrag = true;
+            };
 
-            system.defaults.finder.AppleShowAllExtensions = true;
-            system.defaults.finder._FXShowPosixPathInTitle = true;
-            system.defaults.finder.AppleShowAllFiles = true;
-            system.defaults.finder.ShowPathbar = true;
-            system.defaults.finder.ShowStatusBar = true;
+            system.defaults.finder = {
+              AppleShowAllExtensions = true;
+              _FXShowPosixPathInTitle = true;
+              AppleShowAllFiles = true;
+              ShowPathbar = true;
+              ShowStatusBar = true;
+            };
 
-            system.defaults.NSGlobalDomain.NSAutomaticSpellingCorrectionEnabled =
-              false;
-            system.defaults.NSGlobalDomain.NSAutomaticQuoteSubstitutionEnabled =
-              false;
-            system.defaults.NSGlobalDomain.NSAutomaticPeriodSubstitutionEnabled =
-              false;
-            system.defaults.NSGlobalDomain.NSAutomaticDashSubstitutionEnabled =
-              false;
-            system.defaults.NSGlobalDomain.NSAutomaticCapitalizationEnabled =
-              false;
+            system.defaults.NSGlobalDomain = {
+              NSAutomaticSpellingCorrectionEnabled = false;
+              NSAutomaticQuoteSubstitutionEnabled = false;
+              NSAutomaticPeriodSubstitutionEnabled = false;
+              NSAutomaticDashSubstitutionEnabled = false;
+              NSAutomaticCapitalizationEnabled = false;
+            };
 
             system.keyboard.enableKeyMapping = true;
             system.keyboard.remapCapsLockToControl = true;
@@ -156,6 +166,7 @@
                     pkgs.coreutils-prefixed
                     pkgs.difftastic
                     pkgs.editorconfig-core-c
+                    pkgs.emacs
                     pkgs.fd
                     pkgs.findutils
                     pkgs.fishPlugins.tide
@@ -166,17 +177,22 @@
                     pkgs.gnutls
                     pkgs.home-manager
                     pkgs.imagemagick
+                    pkgs.iosevka
                     pkgs.ispell
+                    pkgs.moar
                     pkgs.neofetch
                     pkgs.neovim
                     pkgs.nixfmt-classic
                     pkgs.nushell
                     pkgs.pandoc
+                    pkgs.riff
                     pkgs.ripgrep
                     pkgs.shellcheck
                     pkgs.sqlite
                     pkgs.tree-sitter
+                    pkgs.yazi
                     pkgs.zstd
+                    pkgs.zoxide
                   ];
 
                   home.sessionVariables = {
@@ -265,11 +281,19 @@
                     '';
                   };
 
-                  programs.fzf.enable = true;
-
                   programs.direnv = {
                     enable = true;
                     nix-direnv.enable = true;
+                  };
+
+                  programs.fzf.enable = true;
+
+                  programs.yazi = {
+                    enable = true;
+                  };
+
+                  programs.zoxide = {
+                    enable = true;
                   };
 
                   # ~/.config symlinks
