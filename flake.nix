@@ -24,15 +24,14 @@
   # > darwin-rebuild switch --flake .#daniel-macbook-pro-2018
   # Alternatively, since this system _is_ daniel-macbook-pro-2018, then we can build with:
   # > darwin-rebuild switch --flake .
-  outputs = inputs: {
+  outputs = inputs @ {lix-module, ...} : {
     darwinConfigurations.daniel-macbook-pro-2018 =
       inputs.nix-darwin.lib.darwinSystem {
         system = "x86_64-darwin";
-        pkgs = import inputs.nixpkgs { system = "x86_64-darwin"; };
 
         modules = [
           # see: https://lix.systems/add-to-config/
-          inputs.lix-module.nixosModules.default
+          lix-module.nixosModules.default
 
           ({ pkgs, ... }: {
             # List packages installed in system profile. To search by name, run:
@@ -46,36 +45,38 @@
               pkgs.commit-mono
             ];
 
-            homebrew.enable = true;
-            homebrew.onActivation.cleanup = "uninstall";
-            homebrew.onActivation.upgrade = true;
-            homebrew.global.autoUpdate = false;
-            homebrew.global.brewfile = true;
-            homebrew.taps = [ "homebrew/cask" ];
-            homebrew.caskArgs.no_quarantine = true;
-            homebrew.casks = [
-              "arc"
-              "firefox"
-              "microsoft-edge"
-              "obsidian"
-              "raycast"
-              "telegram"
-              "visual-studio-code"
-              "wezterm"
-            ];
+            homebrew = {
+              enable = true;
+              onActivation.cleanup = "uninstall";
+              onActivation.upgrade = true;
+              global.autoUpdate = false;
+              global.brewfile = true;
+              taps = [ "homebrew/cask" ];
+              caskArgs.no_quarantine = true;
+              casks = [
+                "arc"
+                "firefox"
+                "microsoft-edge"
+                "obsidian"
+                "raycast"
+                "telegram"
+                "visual-studio-code"
+                "wezterm"
+              ];
 
-            # See https://github.com/mas-cli/mas
-            # > mas list  # for installed apps
-            # > mas search --price # to search the app store
-            homebrew.masApps = {
-              "Microsoft Remote Desktop" = 1295203466;
-              Amphetamine = 937984704;
-              Bitwarden = 1352778147;
-              WhatsApp = 1147396723;
-              WireGuard = 1451685025;
-              Pages = 409201541;
-              Numbers = 409203825;
-              "AdGuard for Safari" = 1440147259;
+              # See https://github.com/mas-cli/mas
+              # > mas list  # for installed apps
+              # > mas search --price # to search the app store
+              masApps = {
+                #"Microsoft Remote Desktop" = 1295203466;
+                Amphetamine = 937984704;
+                Bitwarden = 1352778147;
+                #WhatsApp = 1147396723;
+                WireGuard = 1451685025;
+                Pages = 409201541;
+                Numbers = 409203825;
+                "AdGuard for Safari" = 1440147259;
+              };
             };
 
             environment.shells = [ pkgs.fish ];
@@ -133,7 +134,6 @@
             system.keyboard.remapCapsLockToControl = true;
 
             nix.useDaemon = true;
-            nix.package = pkgs.nix;
             nix.extraOptions = ''
               experimental-features = nix-command flakes
             '';
@@ -198,20 +198,8 @@
                   home.sessionVariables = {
                     CLICOLOR = 1;
                     EDITOR = "nvim";
-                    TERMINAL = "alacritty";
+                    TERMINAL = "fish";
                     TERM = "xterm-256color";
-                  };
-
-                  programs.alacritty = {
-                    enable = true;
-                    settings.font.normal.family = "MesloLGS Nerd Font Mono";
-                    settings.font.size = 14;
-                    settings.shell.program = "${pkgs.fish}/bin/fish";
-                    settings.window.blur = true;
-                    settings.window.decorations = "Buttonless";
-                    settings.window.opacity = 0.75;
-                    settings.window.padding.x = 10;
-                    settings.window.padding.y = 10;
                   };
 
                   programs.atuin = {
@@ -220,14 +208,6 @@
                     enableZshIntegration = true;
                   };
                   
-                  programs.bat = {
-                    enable = true;
-                    config = {
-                      pager = "less -FR";
-                      theme = "Nord";
-                    };
-                  };
-
                   programs.eza = {
                     enable = true;
                     enableFishIntegration = true;
@@ -252,6 +232,16 @@
                     functions = {
                       # $1 length is 2 -> `cd ../`, 3 -> `cd ../../`, etc
                       __multicd = "echo cd (string repeat --count (math (string length -- $argv[1]) - 1) ../)";
+                      forward-single-char-or-forward-word = ''
+                        set -l line (commandline -L)
+                        set -l cmd (commandline)
+                        set -l cursor (commandline -C)
+                        if test (string length -- $cmd[$line]) = $cursor
+                          commandline -f forward-word
+                        else
+                          commandline -f forward-single-char
+                        end
+                      '';
                     };
 
                     plugins = [
@@ -278,6 +268,9 @@
                     interactiveShellInit = ''
                       # disable greeting
                       set -U fish_greeting
+
+                      # my bindings
+                      bind \cf forward-single-char-or-forward-word
                     '';
                   };
 
