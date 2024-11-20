@@ -170,6 +170,7 @@
                   # here are the ones that I don't care to tweak
                   # otherwise they'd go under programs.<module>...
                   (pkgs.ripgrep.override {withPCRE2 = true;})
+                  pkgs.alejandra
                   pkgs.binutils
                   pkgs.clac
                   pkgs.coreutils-prefixed
@@ -237,6 +238,10 @@
 
                 programs.nushell = {
                   enable = true;
+                  shellAliases = {
+                    nu-open = "open";
+                    open = "^open";
+                  };
                 };
 
                 programs.fish = {
