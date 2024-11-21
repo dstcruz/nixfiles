@@ -24,8 +24,13 @@
   # > darwin-rebuild switch --flake .#daniel-macbook-pro-2018
   # Alternatively, since this system _is_ daniel-macbook-pro-2018, then we can build with:
   # > darwin-rebuild switch --flake .
-  outputs = inputs @ {lix-module, ...}: {
-    darwinConfigurations.daniel-macbook-pro-2018 = inputs.nix-darwin.lib.darwinSystem {
+  outputs = inputs @ {
+    lix-module,
+    nix-darwin,
+    home-manager,
+    ...
+  }: {
+    darwinConfigurations.daniel-macbook-pro-2018 = nix-darwin.lib.darwinSystem {
       system = "x86_64-darwin";
 
       modules = [
@@ -136,6 +141,22 @@
             NSAutomaticCapitalizationEnabled = false;
           };
 
+          # You can read these values with:
+          # > defaults read <domain> [<key>]
+          # like this:
+          # > defaults read com.apple.desktopservices
+          # > defaults read com.apple.desktopservices DontWriteUSBStores
+          system.defaults.CustomUserPreferences = {
+            "com.apple.desktopservices" = {
+              # Avoid creating .DS_Store files on network or USB volumes
+              DSDontWriteNetworkStores = true;
+              DSDontWriteUSBStores = true;
+            };
+            "com.apple.AdLib" = {
+              allowApplePersonalizedAdvertising = false;
+            };
+          };
+
           system.keyboard.enableKeyMapping = true;
           system.keyboard.remapCapsLockToControl = true;
 
@@ -149,7 +170,7 @@
           system.stateVersion = 4;
         })
 
-        inputs.home-manager.darwinModules.home-manager
+        home-manager.darwinModules.home-manager
         {
           home-manager = {
             useGlobalPkgs = true;
@@ -179,7 +200,6 @@
                   pkgs.fd
                   pkgs.findutils
                   pkgs.fishPlugins.tide
-                  pkgs.fontconfig
                   pkgs.gawk
                   pkgs.git
                   pkgs.gnugrep
@@ -242,6 +262,22 @@
                     nu-open = "open";
                     open = "^open";
                   };
+                  envFile.text = ''
+                    $env.PROMPT_COMMAND = {|| 
+                      if (is-admin) {
+                        $"(ansi red_bold)($env.PWD)"
+                      } else {
+                        $"(ansi green_bold)($env.PWD)"
+                      }
+                    }
+
+                    $env.PROMPT_COMMAND_RIGHT = "" 
+
+                    $env.PROMPT_INDICATOR = "〉"
+                    $env.PROMPT_INDICATOR_VI_INSERT = ": "
+                    $env.PROMPT_INDICATOR_VI_NORMAL = "〉"
+                    $env.PROMPT_MULTILINE_INDICATOR = "::: "
+                  '';
                 };
 
                 programs.fish = {
@@ -296,6 +332,7 @@
 
                 programs.direnv = {
                   enable = true;
+                  enableNushellIntegration = true;
                   nix-direnv.enable = true;
                 };
 
